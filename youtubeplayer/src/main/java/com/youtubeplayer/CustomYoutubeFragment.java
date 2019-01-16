@@ -627,6 +627,7 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
     public KillableRunnable runnable1 = new KillableRunnable() {
         @Override
         public void doWork() {
+            if (getActivity() == null) return;
             Log.d(TAG, "runnable1");
             if (!youTubePlayer.isPlaying()) return;
             gradient.setBackground(null);
