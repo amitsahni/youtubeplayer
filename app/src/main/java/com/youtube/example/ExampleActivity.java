@@ -1,11 +1,14 @@
 package com.youtube.example;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -20,7 +23,7 @@ import java.util.List;
 public class ExampleActivity extends AppCompatActivity {
 
     CustomYoutubeFragment customFragment;
-    private View mainContent;
+    private RelativeLayout mainContent;
     private Button button1, button2;
 
     @Override
@@ -34,27 +37,33 @@ public class ExampleActivity extends AppCompatActivity {
         customFragment.initialize("AIzaSyDDRyqAf3cU76BOhPjssMzEs8M2-hC8Vig", new OnInitializedListener() {
             @Override
             public void onSuccess(boolean wasRestored) {
-                customFragment.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
+                final int paddingTop = mainContent.getPaddingTop();
+                final int paddingBottom = mainContent.getPaddingBottom();
+                final int paddingLeft = mainContent.getPaddingLeft();
+                final int paddingRight = mainContent.getPaddingRight();
                 customFragment.getYouTubePlayer().setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION |
                         YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
+                List<String> arrayList = new ArrayList<>();
+                arrayList.add("uvMYRIRUS2U");
+                arrayList.add("PLy4xTWVDquWO0_rRHbCksHRYglZMmSJdV");
+                customFragment.getYouTubePlayer().loadVideo("Tnj9E5I3DkM");
+                float px = convertDpToPx(ExampleActivity.this, getResources().getDimension(R.dimen.popupheight));
+                customFragment.setViewY((int) (customFragment.getViewY() + px));
+                customFragment.showDefaultPopUp();
                 customFragment.setFullScreenListener(new YouTubePlayer.OnFullscreenListener() {
                     @Override
                     public void onFullscreen(boolean b) {
                         if (b) {
+                            mainContent.setPadding(0, 0, 0, 0);
                             button1.setVisibility(View.GONE);
                             button2.setVisibility(View.GONE);
                         } else {
+                            mainContent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
                             button1.setVisibility(View.VISIBLE);
                             button2.setVisibility(View.VISIBLE);
                         }
                     }
                 });
-                List<String> arrayList = new ArrayList<>();
-                arrayList.add("uvMYRIRUS2U");
-                arrayList.add("PLy4xTWVDquWO0_rRHbCksHRYglZMmSJdV");
-                customFragment.getYouTubePlayer().loadVideo("Tnj9E5I3DkM");
-                customFragment.setViewY(customFragment.getViewY() + 50);
-                customFragment.showDefaultPopUp();
             }
 
             @Override
@@ -62,13 +71,16 @@ public class ExampleActivity extends AppCompatActivity {
 
             }
         });
-
         customFragment.setOnConfigurationChanged(new OnConfigChanged() {
             @Override
             public void onConfigurationChanged(Configuration newConfig) {
-                customFragment.setViewY(customFragment.getViewY() + 50);
+                customFragment.setViewY(customFragment.getViewY() + 110);
             }
         });
+    }
+
+    public float convertDpToPx(Context context, float dp) {
+        return dp * context.getResources().getDisplayMetrics().density;
     }
 
     @Override

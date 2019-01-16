@@ -34,7 +34,6 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
     private int viewX, viewY = 0;
     private boolean isFullScreen;
     private final String TAG = "CustomYoutubeFragment";
-    private YouTubePlayer.PlayerStyle playerStyle = YouTubePlayer.PlayerStyle.DEFAULT;
     private boolean isDefault, isError;
     private OnConfigChanged listener;
     private String videoId = "";
@@ -97,7 +96,7 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
         this.viewY = viewY;
     }
 
-    public void setFullscreen(boolean b) {
+    private void setFullscreen(boolean b) {
         if (youTubePlayer != null) {
             youTubePlayer.setFullscreen(b);
         }
@@ -119,10 +118,10 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
                         Log.d(TAG, "width = " + width);
                         Log.d(TAG, "viewX = " + viewX);
                         Log.d(TAG, "viewY = " + viewY);
-                        setFullScreenListener();
-                        setPlaybackEventListener();
-                        setPlayerStateChangeListener();
-                        setPlaylistEventListener();
+//                        setFullScreenListener();
+//                        setPlaybackEventListener();
+//                        setPlayerStateChangeListener();
+//                        setPlaylistEventListener();
                         listener.onSuccess(b);
                     }
                 });
@@ -183,14 +182,13 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
 
 
     public void showDefaultPopUp() {
-        if (playerStyle == YouTubePlayer.PlayerStyle.CHROMELESS) {
-            isDefault = true;
-            if (popupWindow == null) {
-                popupWindow = new PopupWindow(view, width, height);
-            }
-            showPopUp();
-            defaultViewControl(view);
+        setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
+        isDefault = true;
+        if (popupWindow == null) {
+            popupWindow = new PopupWindow(view, width, height);
         }
+        showPopUp();
+        defaultViewControl(view);
     }
 
     public void setPopupWindow(@NonNull final View v) {
@@ -223,10 +221,9 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
         }
     }
 
-    public void setPlayerStyle(YouTubePlayer.PlayerStyle style) {
+    private void setPlayerStyle(YouTubePlayer.PlayerStyle style) {
         if (youTubePlayer != null) {
             youTubePlayer.setPlayerStyle(style);
-            playerStyle = style;
         }
     }
 
@@ -407,8 +404,10 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
                 @Override
                 public void onError(YouTubePlayer.ErrorReason errorReason) {
                     Log.d(TAG, "PlayerStateChangeListener : onError = " + errorReason.name());
-                    isError = true;
-                    dismissPopUp();
+                    if (playPause != null) {
+                        isError = true;
+                        dismissPopUp();
+                    }
 //                    switch (errorReason) {
 //                        case NETWORK_ERROR:
 //                        case UNKNOWN:
