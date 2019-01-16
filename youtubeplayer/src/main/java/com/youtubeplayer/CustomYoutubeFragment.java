@@ -2,6 +2,7 @@ package com.youtubeplayer;
 
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -48,7 +51,8 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
     private TextView playTime;
     private Handler handler, handler1 = null;
     private int milli;
-
+    private Configuration configuration;
+    private int statusBarHeight;
 
     public static CustomYoutubeFragment newInstance() {
         CustomYoutubeFragment customYoutubeFragment = new CustomYoutubeFragment();
@@ -62,6 +66,18 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         //initialize(key, this);
         view = LayoutInflater.from(getActivity()).inflate(R.layout.view_popup_window, null, false);
+        configuration = getResources().getConfiguration();
+
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                Rect rectangle = new Rect();
+                Window window = getActivity().getWindow();
+                window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
+                statusBarHeight = rectangle.top;
+                Log.d(TAG, "statusBarHeight = " + statusBarHeight);
+            }
+        });
         return super.onCreateView(layoutInflater, viewGroup, bundle);
 
     }
@@ -113,15 +129,11 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
                         height = getView().getHeight();
                         width = getView().getWidth();
                         viewX = (int) getView().getX();
-                        viewY = (int) getView().getY();
+                        viewY = (int) getView().getY() + statusBarHeight;
                         Log.d(TAG, "Heigth = " + height);
                         Log.d(TAG, "width = " + width);
                         Log.d(TAG, "viewX = " + viewX);
                         Log.d(TAG, "viewY = " + viewY);
-//                        setFullScreenListener();
-//                        setPlaybackEventListener();
-//                        setPlayerStateChangeListener();
-//                        setPlaylistEventListener();
                         listener.onSuccess(b);
                     }
                 });
@@ -135,6 +147,21 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
             public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
                 Log.e(getTag(), "onInitializationFailure = " + youTubeInitializationResult.name());
                 listener.onError(youTubeInitializationResult);
+            }
+        });
+
+        getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (!isFullScreen) {
+                    viewX = (int) getView().getX();
+                    viewY = (int) getView().getY() + statusBarHeight;
+                    Log.d(TAG, "viewX = " + viewX);
+                    Log.d(TAG, "viewY = " + viewY);
+                    if (getPopupWindow() != null) {
+                        getPopupWindow().update(viewX, viewY, width, height);
+                    }
+                }
             }
         });
 
@@ -216,7 +243,7 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
             Log.d(TAG, "showPopUp");
             Log.d(TAG, "viewX = " + viewX);
             Log.d(TAG, "viewY = " + viewY);
-            popupWindow.showAtLocation(getView().getRootView(), Gravity.NO_GRAVITY, viewX, viewY);
+            popupWindow.showAtLocation(getView(), Gravity.NO_GRAVITY, viewX, viewY);
         }
     }
 
@@ -258,6 +285,7 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
             params.height = height;
             params.width = width;
         }
+        getView().setLayoutParams(params);
         showPopUp();
 
     }
@@ -269,17 +297,23 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
         getView().postDelayed(new Runnable() {
             @Override
             public void run() {
-                viewX = (int) getView().getX();
-                viewY = (int) getView().getY();
-                Log.d(TAG, "onConfigurationChanged");
-                Log.d(TAG, "viewX = " + viewX);
-                Log.d(TAG, "viewY = " + viewY);
-                if (listener != null) {
-                    listener.onConfigurationChanged(newConfig);
+                if (configuration.orientation == newConfig.orientation) {
+                    Log.d(TAG, "onConfigurationChanged");
+                    Log.d(TAG, "No Change");
+                    showPopUp();
+                } else {
+                    viewX = (int) getView().getX();
+                    viewY = (int) getView().getY();
+                    Log.d(TAG, "onConfigurationChanged");
+                    Log.d(TAG, "viewX = " + viewX);
+                    Log.d(TAG, "viewY = " + viewY);
+                    if (listener != null) {
+                        listener.onConfigurationChanged(newConfig);
+                    }
+                    layoutChange();
                 }
-                layoutChange();
             }
-        }, 1000);
+        }, 2000);
 
 
     }

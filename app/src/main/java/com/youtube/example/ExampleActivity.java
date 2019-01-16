@@ -2,11 +2,15 @@ package com.youtube.example;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -49,9 +53,8 @@ public class ExampleActivity extends AppCompatActivity {
                 arrayList.add("uvMYRIRUS2U");
                 arrayList.add("PLy4xTWVDquWO0_rRHbCksHRYglZMmSJdV");
                 customFragment.getYouTubePlayer().loadVideo("Tnj9E5I3DkM");
-                float px = convertDpToPx(ExampleActivity.this, getResources().getDimension(R.dimen.popupheight));
-                customFragment.setViewY((int) (customFragment.getViewY() + px));
                 customFragment.showDefaultPopUp();
+               // customFragment.setViewY((int) (customFragment.getViewY() + statusBarHeight));
                 customFragment.setFullScreenListener(new YouTubePlayer.OnFullscreenListener() {
                     @Override
                     public void onFullscreen(boolean b) {
@@ -76,7 +79,7 @@ public class ExampleActivity extends AppCompatActivity {
         customFragment.setOnConfigurationChanged(new OnConfigChanged() {
             @Override
             public void onConfigurationChanged(Configuration newConfig) {
-                customFragment.setViewY(customFragment.getViewY() + 110);
+                //customFragment.setViewY(customFragment.getViewY() + 110);
             }
         });
     }
