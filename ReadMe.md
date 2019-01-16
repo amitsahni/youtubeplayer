@@ -57,3 +57,20 @@ customFragment.setPopupWindow(view);
 // Handle your view in your class 
 ```
 
+Download
+--------
+Add the JitPack repository to your root build.gradle
+
+```groovy
+	allprojects {
+		repositories {
+			maven { url "https://jitpack.io" }
+		}
+	}
+```
+Add the Gradle dependency:
+```groovy
+	dependencies {
+		compile 'com.github.amitsahni:youtubeplayer:1.0.0'
+	}
+```

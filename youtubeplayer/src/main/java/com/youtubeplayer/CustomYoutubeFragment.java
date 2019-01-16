@@ -182,6 +182,10 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
 
 
     public void showDefaultPopUp() {
+        setFullScreenListener();
+        setPlaybackEventListener();
+        setPlayerStateChangeListener();
+        setPlaylistEventListener();
         setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         isDefault = true;
         if (popupWindow == null) {
@@ -189,6 +193,13 @@ public class CustomYoutubeFragment extends YouTubePlayerFragment {
         }
         showPopUp();
         defaultViewControl(view);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (gradient != null)
+                    gradient.callOnClick();
+            }
+        }, 1000);
     }
 
     public void setPopupWindow(@NonNull final View v) {

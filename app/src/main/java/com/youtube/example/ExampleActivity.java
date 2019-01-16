@@ -37,10 +37,12 @@ public class ExampleActivity extends AppCompatActivity {
         customFragment.initialize("AIzaSyDDRyqAf3cU76BOhPjssMzEs8M2-hC8Vig", new OnInitializedListener() {
             @Override
             public void onSuccess(boolean wasRestored) {
+                if (customFragment.getYouTubePlayer() == null) return;
                 final int paddingTop = mainContent.getPaddingTop();
                 final int paddingBottom = mainContent.getPaddingBottom();
                 final int paddingLeft = mainContent.getPaddingLeft();
                 final int paddingRight = mainContent.getPaddingRight();
+                customFragment.getYouTubePlayer().setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
                 customFragment.getYouTubePlayer().setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION |
                         YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
                 List<String> arrayList = new ArrayList<>();
